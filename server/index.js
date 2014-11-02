@@ -25,7 +25,7 @@ app.set('views', path.resolve(__dirname, 'views'));
 
 // AUTOLOAD ./models/*
 fs.readdirSync(path.resolve(__dirname, 'models')).forEach(function(file) {
-	require(path.resolve(__dirname, 'models', file))
+	require(path.resolve(__dirname, 'models', file));
 });
 
 // AUTOLOAD ./routes/*
