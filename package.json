@@ -1,0 +1,32 @@
+{
+  "name": "dapps-connect",
+  "version": "0.0.1",
+  "description": "CSA for dapps",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/longlh/dapps-connect"
+  },
+  "author": {
+    "name": "Luc Hoang Long",
+    "email": "d@dapps.me"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/longlh/dapps-connect/issues"
+  },
+  "homepage": "https://github.com/longlh/dapps-connect",
+  "dependencies": {
+    "express": "^4.10.1",
+    "grunt": "^0.4.5",
+    "load-grunt-tasks": "^1.0.0",
+    "lodash": "^2.4.1",
+    "mongoose": "^3.8.18",
+    "rekuire": "^0.1.5",
+    "reverse-route": "^1.1.0",
+    "swig": "^1.4.2"
+  }
+}
