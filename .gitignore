@@ -28,3 +28,5 @@ client/vendors
 # Users Environment Variables
 .lock-wscript
 
+/client/assets/public
+/.sass-cache

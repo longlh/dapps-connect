@@ -9,7 +9,8 @@ var express = require('express'),
 
 // local modules
 var conf = rek('config/profiles/all'),
-	swig = rek('config/view-engines/swig');
+	swig = rek('config/view-engines/swig'),
+	assetManager = rek('config/assets/manager');
 
 var app = reverseRoute(express());
 
@@ -21,7 +22,8 @@ app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
 app.set('views', path.resolve(__dirname, 'views'));
 
-// configure
+// initialize assets manager
+assetManager(app, swig);
 
 // AUTOLOAD ./models/*
 fs.readdirSync(path.resolve(__dirname, 'models')).forEach(function(file) {
