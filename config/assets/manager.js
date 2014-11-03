@@ -3,6 +3,8 @@
 var fs = require('fs'),
 	path = require('path');
 
+var conf = rek('config/profiles/all');
+
 module.exports = function(app, swig) {
 	var rev = {
 			js: rek('config/assets/js.json'),
@@ -35,4 +37,8 @@ module.exports = function(app, swig) {
 
 		next();
 	});
+
+	if (conf.debug) {
+		app.use(require('express').static('client/assets/public/'));
+	}
 };
