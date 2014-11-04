@@ -29,4 +29,8 @@ client/vendors
 .lock-wscript
 
 /client/assets/public
-/.sass-cache
+/client/scss/_common.scss
+/build/reports
+/config/assets/css.json
+/config/assets/img.json
+/config/assets/js.json
