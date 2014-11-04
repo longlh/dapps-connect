@@ -30,7 +30,7 @@ client/vendors
 
 /client/assets/public
 /client/scss/_common.scss
+
+/config/assets/rev.json
+
 /build/reports
-/config/assets/css.json
-/config/assets/img.json
-/config/assets/js.json

@@ -1,26 +1,17 @@
 'use strict';
-var path = require('path');
-
-var paths = {
-	js: {
-		server: [ 'server/**/*.js'],
-		client: [ 'client/**/*.js', '!client/vendors/**/*.js', '!client/assets/public/**/*.js' ]
-	},
-	css: [ 'client/assets/css/*.css' ]
-};
-
-var assets = require('./config/assets/assets.json'),
+var path = require('path'),
+	assets = require('./config/assets/assets.json'),
 	replacePatterns;
 
 module.exports = function(grunt) {
 	grunt.initConfig({
 		clean: {
-			build: [ 'client/assets/public/**', 'config/assets/css.json', 'config/assets/js.json', 'config/assets/img.json' ],
-			temp: [ '.tmp/**', 'client/scss/_common.scss' ]
+			build: [ 'client/assets/public/**', 'config/assets/rev.json' ],
+			temp: [ '.tmp/**', 'client/scss/_common.scss', 'client/assets/public/**/*.js.*.map' ]
 		},
 		jshint: {
 			server: {
-				src: paths.js.server,
+				src: [ 'server/**/*.js', 'app.js', 'Gruntfile.js', 'config/**/*.js' ],
 				options: {
 					jshintrc: 'build/rules/.jshintrc-server',
 					reporter: 'jslint',
@@ -28,7 +19,7 @@ module.exports = function(grunt) {
 				}
 			},
 			client: {
-				src: paths.js.client,
+				src: [ 'client/**/*.js', '!client/vendors/**/*.js', '!client/assets/public/**/*.js' ],
 				options: {
 					jshintrc: 'build/rules/.jshintrc-client',
 					reporter: 'jslint',
@@ -37,6 +28,7 @@ module.exports = function(grunt) {
 			}
 		},
 		csslint: {
+			src: [ '.tmp/scss-css/**/*.css' ],
 			options: {
 				csslintrc: 'build/rules/.csslintrc',
 				absoluteFilePathsForFormatters: true,
@@ -44,8 +36,7 @@ module.exports = function(grunt) {
 					id: 'lint-xml',
 					dest: 'build/reports/csslint.xml'
 				} ]
-			},
-			src: paths.css
+			}
 		},
 		sass: {
 			build: {
@@ -58,7 +49,7 @@ module.exports = function(grunt) {
 					expand: true,
 					cwd: 'client/scss',
 					src: [ '*.scss', '!*.tmp.scss' ],
-					dest: '.tmp/css',
+					dest: '.tmp/scss-css',
 					ext: '.css'
 				} ]
 			}
@@ -76,41 +67,36 @@ module.exports = function(grunt) {
 				files: assets.css
 			}
 		},
-		assets_versioning: {
-			options: {
-				use: 'hash',
-				versionsMapTrimPath: 'client/assets/public'
-			},
-			js: {
-				options: {
-					tasks: [ 'uglify:build'],
-					versionsMapFile: 'config/assets/js.json'
-				}
-			},
-			css: {
-				options: {
-					tasks: [ 'cssmin:build' ],
-					versionsMapFile: 'config/assets/css.json'
-				}
-			}
-		},
 		filerev: {
 			img: {
-				options: {
-					dest: 'config/assets/img.json'
-				},
 				files: [ {
 					expand: true,
 					cwd: 'client/assets/img/',
-					src: [ '*.*' ],
+					src: [ '**/*' ],
 					dest: 'client/assets/public/img/'
+				} ]
+			},
+			js: {
+				files: [ {
+					expand: true,
+					cwd: '.tmp/js',
+					src: [ '**/*' ],
+					dest: 'client/assets/public/js/'
+				} ]
+			},
+			css: {
+				files: [ {
+					expand: true,
+					cwd: '.tmp/css',
+					src: [ '**/*' ],
+					dest: 'client/assets/public/css/'
 				} ]
 			}
 		},
 		filerev_assets: {
-			img: {
+			rev: {
 				options: {
-					dest: 'config/assets/img.json',
+					dest: 'config/assets/rev.json',
 					cwd: 'client/assets'
 				}
 			}
@@ -149,21 +135,27 @@ module.exports = function(grunt) {
 					env: {
 						NODE_ENV: 'development'
 					},
-					legacyWatch: true
+					legacyWatch: true,
+					delay: 2000,
+					cwd: __dirname,
+					ignore: [ 'node_modules', '.tmp', 'client/assets/public', 'client/vendors' ]
 				}
 			}
 		},
 		watch: {
 			scss: {
-				files: [ 'config/assets/assets.json', 'client/assets/img/**', 'client/scss/**', '!client/scss/_common.scss' ],
-				tasks: [ 'filerev', 'filerev_assets', 'replace', 'sass', 'csslint', 'assets_versioning:css', 'clean:temp' ]
+				files: [ 'config/assets/assets.json', 'client/assets/img/**', 'client/scss/**', '!client/scss/_common.scss', '!client/assets/public/**' ],
+				tasks: [ 'filerev:img', 'replace', 'sass', 'csslint', 'cssmin', 'filerev:css', 'filerev_assets', 'clean:temp' ]
 			},
 			client: {
-				files: [ 'config/assets/assets.json', 'client/**/*.js' ],
-				tasks: [ 'jshint', 'assets_versioning:js' ]
+				files: [ 'config/assets/assets.json', 'client/**/*.js', '!client/assets/public/**', '!client/vendors/**' ],
+				tasks: [ 'jshint', 'uglify', 'filerev:js', 'filerev_assets', 'clean:temp' ]
 			},
 			server: {
-				files: [ 'server/**/*.js', 'config/**/*.js' ]
+				files: [ 'server/**/*.js', 'config/**/*.js' ],
+				options: {
+					reload: true
+				}
 			}
 		},
 		concurrent: {
@@ -179,9 +171,7 @@ module.exports = function(grunt) {
 	// load all plugins
 	require('load-grunt-tasks')(grunt);
 
-	// grunt.loadNpmTasks('grunt-ver');
-
-	grunt.registerTask('build', [ 'clean:build', 'filerev', 'filerev_assets', 'replace', 'sass', 'csslint', 'jshint', 'assets_versioning', 'clean:temp' ]);
+	grunt.registerTask('build', [ 'clean:build', 'filerev:img', 'replace', 'sass', 'csslint', 'jshint', 'uglify', 'cssmin', 'filerev:js', 'filerev:css', 'filerev_assets', 'clean:temp' ]);
 
 	grunt.registerTask('default', [ 'build', 'concurrent:dev' ]);
 };
