@@ -4,7 +4,7 @@ var path = require('path');
 var paths = {
 	js: {
 		server: [ 'server/**/*.js'],
-		client: [ 'client/**/*.js', '!client/vendors/**' ]
+		client: [ 'client/**/*.js', '!client/vendors/**/*.js', '!client/assets/public/**/*.js' ]
 	},
 	css: [ 'client/assets/css/*.css' ]
 };
@@ -15,7 +15,7 @@ var assets = require('./config/assets/assets.json'),
 module.exports = function(grunt) {
 	grunt.initConfig({
 		clean: {
-			build: [ 'client/assets/public', 'config/assets/css.json', 'config/assets/js.json', 'config/assets/img.json' ],
+			build: [ 'client/assets/public/**', 'config/assets/css.json', 'config/assets/js.json', 'config/assets/img.json' ],
 			temp: [ '.tmp/**', 'client/scss/_common.scss' ]
 		},
 		jshint: {
@@ -50,12 +50,14 @@ module.exports = function(grunt) {
 		sass: {
 			build: {
 				options: {
-					style: 'expanded'
+					style: 'compressed',
+					noCache: true,
+					sourcemap: 'none'
 				},
 				files: [ {
 					expand: true,
 					cwd: 'client/scss',
-					src: [ '*.scss' ],
+					src: [ '*.scss', '!*.tmp.scss' ],
 					dest: '.tmp/css',
 					ext: '.css'
 				} ]
@@ -139,6 +141,38 @@ module.exports = function(grunt) {
 					'client/scss/_common.scss': 'client/scss/common.tmp.scss'
 				}
 			}
+		},
+		nodemon: {
+			dev: {
+				script: 'app.js',
+				options: {
+					env: {
+						NODE_ENV: 'development'
+					},
+					legacyWatch: true
+				}
+			}
+		},
+		watch: {
+			scss: {
+				files: [ 'config/assets/assets.json', 'client/assets/img/**', 'client/scss/**', '!client/scss/_common.scss' ],
+				tasks: [ 'filerev', 'filerev_assets', 'replace', 'sass', 'csslint', 'assets_versioning:css', 'clean:temp' ]
+			},
+			client: {
+				files: [ 'config/assets/assets.json', 'client/**/*.js' ],
+				tasks: [ 'jshint', 'assets_versioning:js' ]
+			},
+			server: {
+				files: [ 'server/**/*.js', 'config/**/*.js' ]
+			}
+		},
+		concurrent: {
+			dev: {
+				tasks: [ 'nodemon:dev', 'watch' ],
+				options: {
+					logConcurrentOutput: true
+				}
+			}
 		}
 	});
 
@@ -147,5 +181,7 @@ module.exports = function(grunt) {
 
 	// grunt.loadNpmTasks('grunt-ver');
 
-	grunt.registerTask('default', [ 'clean:build', 'filerev', 'filerev_assets', 'replace', 'sass', 'csslint', 'jshint', 'assets_versioning', 'clean:temp' ]);
+	grunt.registerTask('build', [ 'clean:build', 'filerev', 'filerev_assets', 'replace', 'sass', 'csslint', 'jshint', 'assets_versioning', 'clean:temp' ]);
+
+	grunt.registerTask('default', [ 'build', 'concurrent:dev' ]);
 };

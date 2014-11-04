@@ -14,6 +14,15 @@ var conf = rek('config/profiles/all'),
 
 var app = reverseRoute(express());
 
+// log execute time
+app.use(function(req, res, next) {
+	var start = process.hrtime();
+	res.on('finish', function() {
+		console.log(req.url + ' - ' + (process.hrtime(start)) + 'ms');
+	});
+	next();
+});
+
 // initialize db
 mongoose.connect(conf.db);
 
@@ -32,6 +41,7 @@ fs.readdirSync(path.resolve(__dirname, 'models')).forEach(function(file) {
 
 // AUTOLOAD ./routes/*
 fs.readdirSync(path.resolve(__dirname, 'routes')).forEach(function(file) {
+	// inject `app` object
 	require(path.resolve(__dirname, 'routes', file))(app);
 });
 
