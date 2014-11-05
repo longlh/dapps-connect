@@ -128,41 +128,34 @@ module.exports = function(grunt) {
 				}
 			}
 		},
-		nodemon: {
-			dev: {
-				script: 'app.js',
-				options: {
-					env: {
-						NODE_ENV: 'development'
-					},
-					legacyWatch: true,
-					delay: 2000,
-					cwd: __dirname,
-					ignore: [ 'node_modules', '.tmp', 'client/assets/public', 'client/vendors' ]
-				}
-			}
-		},
 		watch: {
+			options: {
+				spawn: false
+			},
 			scss: {
 				files: [ 'config/assets/assets.json', 'client/assets/img/**', 'client/scss/**', '!client/scss/_common.scss', '!client/assets/public/**' ],
-				tasks: [ 'filerev:img', 'replace', 'sass', 'csslint', 'cssmin', 'filerev:css', 'filerev_assets', 'clean:temp' ]
+				tasks: [ 'filerev:img', 'replace', 'sass', 'csslint', 'cssmin', 'filerev:css', 'filerev_assets', 'clean:temp', 'express:dev' ]
 			},
 			client: {
 				files: [ 'config/assets/assets.json', 'client/**/*.js', '!client/assets/public/**', '!client/vendors/**' ],
-				tasks: [ 'jshint', 'uglify', 'filerev:js', 'filerev_assets', 'clean:temp' ]
+				tasks: [ 'jshint', 'uglify', 'filerev:js', 'filerev_assets', 'clean:temp', 'express:dev' ]
 			},
 			server: {
 				files: [ 'server/**/*.js', 'config/**/*.js' ],
+				tasks: [ 'express:dev' ]
+			},
+			system: {
+				files: [ 'app.js', 'Gruntfile.js' ],
 				options: {
 					reload: true
 				}
 			}
 		},
-		concurrent: {
+		express: {
 			dev: {
-				tasks: [ 'nodemon:dev', 'watch' ],
 				options: {
-					logConcurrentOutput: true
+					script: 'app.js',
+					node_env: 'development'
 				}
 			}
 		}
@@ -173,5 +166,5 @@ module.exports = function(grunt) {
 
 	grunt.registerTask('build', [ 'clean:build', 'filerev:img', 'replace', 'sass', 'csslint', 'jshint', 'uglify', 'cssmin', 'filerev:js', 'filerev:css', 'filerev_assets', 'clean:temp' ]);
 
-	grunt.registerTask('default', [ 'build', 'concurrent:dev' ]);
+	grunt.registerTask('default', [ 'build', 'express:dev', 'watch' ]);
 };
