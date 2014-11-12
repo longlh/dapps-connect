@@ -1,7 +1,8 @@
 'use strict';
 
 module.exports = {
-	port: 3000,
+	port: 3001,
 	db: 'mongodb://localhost/connect-dev',
-	debug: true
+	debug: false,
+	cdn: '//connect-cdn.dapps.com'
 };

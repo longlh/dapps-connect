@@ -10,18 +10,25 @@ var express = require('express'),
 // local modules
 var conf = rek('config/profiles/all'),
 	swig = rek('config/view-engines/swig'),
-	assetManager = rek('config/assets/manager');
+	assetManager = rek('config/assets/manager'),
+	i18n = rek('config/locales/i18n');
 
-var app = reverseRoute(express());
+var app = reverseRoute(express(), function(params, req) {
+	params.locale = params.locale || req.param('locale') || i18n.getLocale(req);
+
+	return params;
+});
 
 // log execute time
-app.use(function(req, res, next) {
-	var start = process.hrtime();
-	res.on('finish', function() {
-		console.log(req.url + ' - ' + (process.hrtime(start)) + 'ms');
+if (conf.debug) {
+	app.use(function(req, res, next) {
+		var start = process.hrtime();
+		res.on('finish', function() {
+			console.log(req.url + ' - ' + (process.hrtime(start)) + 'ms');
+		});
+		next();
 	});
-	next();
-});
+}
 
 // initialize db
 mongoose.connect(conf.db);
@@ -32,7 +39,10 @@ app.set('view engine', 'html');
 app.set('views', path.resolve(__dirname, 'views'));
 
 // initialize assets manager
-assetManager(app, swig);
+assetManager(app);
+
+// initialize i18n
+app.use(i18n.init);
 
 // AUTOLOAD ./models/*
 fs.readdirSync(path.resolve(__dirname, 'models')).forEach(function(file) {

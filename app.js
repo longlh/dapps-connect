@@ -4,6 +4,7 @@
 global.rek = require('rekuire');
 
 var conf = rek('config/profiles/all');
+conf.root = __dirname;
 
 // load modules
 rek('server').listen(conf.port, function() {

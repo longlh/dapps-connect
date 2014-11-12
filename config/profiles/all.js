@@ -3,8 +3,10 @@ var _ = rek('lodash');
 
 var config = {
 	cookie: {
-		auth: 'dapps-sso'
-	}
+		auth: 'dapps-sso',
+		i18n: 'l'
+	},
+	cdn: ''
 };
 
 var profile = process.env.NODE_ENV || 'development';

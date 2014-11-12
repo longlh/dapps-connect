@@ -1,12 +1,12 @@
 {
 	"js": {
-		".tmp/js/lib/angular.js": [
+		"build/.tmp/js/lib/angular.js": [
 			"client/vendors/angular/angular.min.js"
 		]
 	},
 	"css": {
-		".tmp/css/core.css": [
-			".tmp/scss-css/core.css"
+		"build/.tmp/css/core.css": [
+			"build/.tmp/scss-css/core.css"
 		]
 	}
 }

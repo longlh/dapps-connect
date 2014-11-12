@@ -4,7 +4,13 @@
 		<link rel="stylesheet" href="[[ _assets('/css/core.css') ]]">
 	</head>
 	<body>
-		<h1 class="folder">[[ message ]]</h1>
+		<h1>[[ __('WELCOME') ]]</h1>
+		<p>[[ message ]]</p>
+		<div class="folder">[[ _url('home') ]]</div>
+		<a href="[[ _url('home', 'about') ]]">About</a>
+		<a href="[[ _url('home', 'about', { view: 'conditions' }) ]]">Conditions</a>
+		<a href="[[ _url('home', { view: 'conditions' }) ]]">Conditions (override)</a>
+		<a href="[[ _url('home', { locale: 'vi' }) ]]">Vietnamese</a>
 		<script src="[[ _assets('/js/lib/angular.js') ]]"></script>
 	</body>
 </html>

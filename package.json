@@ -20,7 +20,15 @@
   },
   "homepage": "https://github.com/longlh/dapps-connect",
   "dependencies": {
-    "express": "^4.10.1",
+    "express": "^4.10.2",
+    "i18n": "^0.5.0",
+    "lodash": "^2.4.1",
+    "mongoose": "3.8.18",
+    "rekuire": "^0.1.7",
+    "reverse-route": "^1.2.6",
+    "swig": "^1.4.2"
+  },
+  "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-contrib-clean": "^0.6.0",
     "grunt-contrib-csslint": "^0.3.1",
@@ -33,11 +41,6 @@
     "grunt-filerev": "^2.1.1",
     "grunt-filerev-assets": "^0.3.2",
     "grunt-replace": "^0.8.0",
-    "load-grunt-tasks": "^1.0.0",
-    "lodash": "^2.4.1",
-    "mongoose": "^3.8.18",
-    "rekuire": "^0.1.5",
-    "reverse-route": "^1.1.0",
-    "swig": "^1.4.2"
+    "load-grunt-tasks": "^1.0.0"
   }
 }
